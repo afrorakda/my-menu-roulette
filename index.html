@@ -1,158 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Menu Roulette - Fridge Combo</title>
-    <style>
-        :root {
-            --bg: #fff;
-            --main: #333;
-            --accent: #eee;
-            --input-bg: #fafafa;
-            --radius: 15px;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--main);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            align-items: center;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 400px;
-            padding: 40px 0;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        h1 { font-size: 1.5rem; font-weight: 800; margin: 0; text-align: center; }
-        .description { font-size: 0.8rem; color: #999; text-align: center; margin-bottom: 5px; }
-
-        textarea {
-            width: 100%;
-            height: 180px;
-            background-color: var(--input-bg);
-            border: 2px solid var(--accent);
-            border-radius: var(--radius);
-            padding: 15px;
-            font-size: 1rem;
-            color: var(--main);
-            box-sizing: border-box;
-            resize: none;
-            outline: none;
-        }
-
-        .clear-row { text-align: right; margin-top: -5px; }
-        .clear-btn { 
-            background: none; border: none; color: #999; 
-            font-size: 0.75rem; font-weight: 700; cursor: pointer;
-            padding: 5px 10px;
-        }
-
-        #result-display {
-            min-height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--accent);
-            border-radius: var(--radius);
-            font-size: 1.6rem;
-            font-weight: 800;
-            text-align: center;
-            padding: 15px;
-            word-break: break-all;
-            margin-bottom: 5px;
-        }
-
-        .decide-btn {
-            width: 100%;
-            background-color: #111;
-            color: #fff;
-            border: none;
-            border-radius: var(--radius);
-            padding: 20px;
-            font-size: 1.2rem;
-            font-weight: 800;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .decide-btn:active { opacity: 0.8; }
-
-        footer {
-            width: 100%;
-            padding: 30px 0;
-            text-align: center;
-            font-size: 0.8rem;
-            color: #ccc;
-            line-height: 1.6;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal-content {
-            background: #fff;
-            padding: 30px;
-            border-radius: var(--radius);
-            width: 80%;
-            max-width: 300px;
-            text-align: center;
-        }
-        .support-btn {
-            display: inline-block;
-            background: #111;
-            color: #fff;
-            text-decoration: none;
-            padding: 12px 20px;
-            border-radius: var(--radius);
-            font-weight: bold;
-            margin: 15px 0;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h1>My Menu Roulette</h1>
-    <p class="description">1 line = 1 menu. Auto-saved.</p>
-    
-    <textarea id="menu-list" placeholder="Nasi Lemak&#10;Laksa&#10;Chicken Rice..."></textarea>
-    <div class="clear-row">
-        <button class="clear-btn" onclick="clearList()">[ CLEAR ALL ]</button>
-    </div>
-    
-    <div id="result-display">Ready?</div>
-    
-    <button class="decide-btn" onclick="decideMenu()">DECIDE</button>
-</div>
-
-<footer>
+<footer style="margin-top: auto; padding: 30px 0; text-align: center; font-size: 0.8rem; color: #999; line-height: 1.6;">
     No login / No tracking / No ads / Browser only<br>
-    <span style="cursor:pointer; text-decoration:underline;" onclick="showSupport()">Privacy Policy</span> / afrorakda © 2026
+    <a href="javascript:void(0)" onclick="showSupport()" style="color: #666; text-decoration: underline; font-weight: 700;">Privacy Policy</a> / afrorakda © 2026
 </footer>
 
-<div id="support-modal" class="modal" onclick="closeSupport()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <h3 style="margin-top:0;">Support & Info</h3>
-        <p style="font-size: 0.85rem; color: #444;">To use this like an app, select "Add to Home Screen" in your browser menu.</p>
-        <a href="https://ko-fi.com/afrorakda" class="support-btn" target="_blank">Support on Ko-fi</a>
+<div id="support-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000;" onclick="closeSupport()">
+    <div class="modal-content" style="background: #fff; padding: 30px; border-radius: 15px; width: 80%; max-width: 300px; text-align: center;" onclick="event.stopPropagation()">
+        <h3 style="margin-top:0; color:#111;">Support & Info</h3>
+        <p style="font-size: 0.85rem; color: #444; line-height: 1.4;">To use this like an app, select "Add to Home Screen" in your browser menu.</p>
+        
+        <a href="https://ko-fi.com/afrorakda" target="_blank" style="display: inline-block; background: #111; color: #fff; text-decoration: none; padding: 12px 20px; border-radius: 15px; font-weight: bold; margin: 15px 0;">Support on Ko-fi</a>
+        
         <p style="margin-top: 15px; font-size: 0.8rem; color: #999; cursor: pointer;" onclick="closeSupport()">[ Close ]</p>
     </div>
 </div>
@@ -197,9 +54,13 @@
         }, 60);
     }
 
-    function showSupport() { document.getElementById('support-modal').style.display = 'flex'; }
-    function closeSupport() { document.getElementById('support-modal').style.display = 'none'; }
+    // Modal Functions
+    function showSupport() {
+        document.getElementById('support-modal').style.display = 'flex';
+    }
+    function closeSupport() {
+        document.getElementById('support-modal').style.display = 'none';
+    }
 </script>
-
 </body>
 </html>
