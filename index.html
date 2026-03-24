@@ -35,23 +35,12 @@
             gap: 20px;
         }
 
-        h1 {
-            font-size: 1.5rem;
-            font-weight: 800;
-            margin: 0;
-            text-align: center;
-        }
-
-        .description {
-            font-size: 0.9rem;
-            color: #666;
-            text-align: center;
-            margin-bottom: 10px;
-        }
+        h1 { font-size: 1.5rem; font-weight: 800; margin: 0; text-align: center; }
+        .description { font-size: 0.9rem; color: #666; text-align: center; margin-bottom: 10px; }
 
         textarea {
             width: 100%;
-            height: 200px;
+            height: 180px;
             background-color: var(--input-bg);
             border: 2px solid var(--accent);
             border-radius: var(--radius);
@@ -63,21 +52,17 @@
             outline: none;
         }
 
-        textarea:focus {
-            border-color: var(--main);
-        }
-
         #result-display {
-            min-height: 80px;
+            min-height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
             background-color: var(--accent);
             border-radius: var(--radius);
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             font-weight: 800;
             text-align: center;
-            padding: 10px;
+            padding: 15px;
             word-break: break-all;
         }
 
@@ -91,43 +76,37 @@
             font-size: 1.2rem;
             font-weight: 800;
             cursor: pointer;
-            transition: opacity 0.2s;
             -webkit-tap-highlight-color: transparent;
         }
 
-        .decide-btn:active {
-            opacity: 0.8;
-        }
+        .decide-btn:active { opacity: 0.8; }
 
         footer {
             width: 100%;
-            padding: 20px 0;
+            padding: 30px 0;
             text-align: center;
             font-size: 0.8rem;
             color: #999;
             line-height: 1.6;
         }
 
-        /* Modal for Support */
+        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
             justify-content: center;
             align-items: center;
-            z-index: 100;
+            z-index: 1000;
         }
 
         .modal-content {
             background: #fff;
-            padding: 25px;
+            padding: 30px;
             border-radius: var(--radius);
-            width: 85%;
-            max-width: 320px;
+            width: 80%;
+            max-width: 300px;
             text-align: center;
         }
 
@@ -136,10 +115,10 @@
             background: #111;
             color: #fff;
             text-decoration: none;
-            padding: 12px 25px;
+            padding: 12px 20px;
             border-radius: var(--radius);
             font-weight: bold;
-            margin-top: 15px;
+            margin: 15px 0;
         }
     </style>
 </head>
@@ -147,9 +126,9 @@
 
 <div class="container">
     <h1>My Menu Roulette</h1>
-    <p class="description">1 line = 1 menu. Your list is auto-saved.</p>
+    <p class="description">1 line = 1 menu. Auto-saved.</p>
     
-    <textarea id="menu-list" placeholder="Spaghetti&#10;Nasi Lemak&#10;Ramen..."></textarea>
+    <textarea id="menu-list" placeholder="Nasi Lemak&#10;Laksa&#10;Chicken Rice..."></textarea>
     
     <div id="result-display">Ready?</div>
     
@@ -163,10 +142,10 @@
 
 <div id="support-modal" class="modal" onclick="closeSupport()">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <h3>Support & Info</h3>
-        <p style="font-size: 0.9rem;">To use this like an app, "Add to Home Screen" from your browser menu.</p>
+        <h3 style="margin-top:0;">Support & Info</h3>
+        <p style="font-size: 0.85rem; color: #444;">To use this like an app, select "Add to Home Screen" in your browser menu.</p>
         <a href="https://ko-fi.com/afrorakda" class="support-btn" target="_blank">Support on Ko-fi</a>
-        <p style="margin-top: 20px; font-size: 0.8rem; color: #999; cursor: pointer;" onclick="closeSupport()">Close</p>
+        <p style="margin-top: 15px; font-size: 0.8rem; color: #999; cursor: pointer;" onclick="closeSupport()">[ Close ]</p>
     </div>
 </div>
 
@@ -180,39 +159,32 @@
         if (saved) menuInput.value = saved;
     };
 
-    // Auto save on input
+    // Auto save
     menuInput.addEventListener('input', () => {
         localStorage.setItem('fc_roulette_list', menuInput.value);
     });
 
     function decideMenu() {
         const lines = menuInput.value.split('\n').filter(line => line.trim() !== "");
-        
         if (lines.length === 0) {
-            resultDisplay.innerText = "Please enter menus!";
+            resultDisplay.innerText = "Enter menus first!";
             return;
         }
 
-        // Simple animation effect
         let count = 0;
         const interval = setInterval(() => {
             resultDisplay.innerText = lines[Math.floor(Math.random() * lines.length)];
             count++;
-            if (count > 10) {
+            if (count > 12) {
                 clearInterval(interval);
                 const final = lines[Math.floor(Math.random() * lines.length)];
                 resultDisplay.innerText = "✨ " + final + " ✨";
             }
-        }, 50);
+        }, 60);
     }
 
-    function showSupport() {
-        document.getElementById('support-modal').style.display = 'flex';
-    }
-
-    function closeSupport() {
-        document.getElementById('support-modal').style.display = 'none';
-    }
+    function showSupport() { document.getElementById('support-modal').style.display = 'flex'; }
+    function closeSupport() { document.getElementById('support-modal').style.display = 'none'; }
 </script>
 
 </body>
