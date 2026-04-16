@@ -2,129 +2,192 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <title>My Menu Roulette - Fridge Combo</title>
+    <title>My Menu Roulette</title>
     
     <link rel="icon" href="image_14.png">
     <link rel="apple-touch-icon" href="image_14.png">
 
     <style>
-        :root {
-            --bg: #fff;
-            --main: #333;
-            --accent: #eee;
-            --input-bg: #fafafa;
-            --radius: 15px;
+        :root { --main: #333; --bg: #fff; --accent: #eee; --input-bg: #fafafa; --radius: 15px; }
+        
+        * { 
+            -webkit-touch-callout: none !important; 
+            -webkit-user-select: none !important; 
+            user-select: none !important; 
+            -webkit-tap-highlight-color: transparent;
+            touch-action: pan-y;
         }
 
-        body {
-            margin: 0; padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg); color: var(--main);
-            display: flex; flex-direction: column; min-height: 100vh; align-items: center;
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background-color: var(--bg); display: flex; justify-content: center; 
+            padding: 0; margin: 0; color: var(--main); -webkit-font-smoothing: antialiased; 
+            height: 100vh; overflow: hidden;
         }
 
-        .container {
-            width: 90%; max-width: 400px; padding: 20px 0;
-            flex-grow: 1; display: flex; flex-direction: column; gap: 10px;
+        .container { 
+            width: 100%; max-width: 380px; height: 100vh; 
+            display: flex; flex-direction: column; position: relative; 
+            padding: 20px; box-sizing: border-box; 
         }
 
-        h1 { font-size: 1.5rem; font-weight: 800; margin: 0; text-align: center; }
-        .description { font-size: 0.8rem; color: #999; text-align: center; }
-
-        textarea {
-            width: 100%; height: 140px;
-            background-color: var(--input-bg); border: 2px solid var(--accent);
-            border-radius: var(--radius); padding: 12px;
-            font-size: 1rem; color: var(--main); box-sizing: border-box;
-            resize: none; outline: none;
+        .main-unit {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
         }
+        
+        header { 
+            display: flex; justify-content: space-between; align-items: start; 
+            margin-bottom: 15px; padding-top: 10px;
+        }
+        .title-group h1 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.8px; margin: 0; }
+        .subtitle { font-size: 0.8rem; color: #777; font-weight: 500; margin-top: 4px; }
 
-        .clear-row { text-align: right; margin-top: -5px; }
-        .clear-btn { background: none; border: none; color: #bbb; font-size: 0.7rem; font-weight: 700; cursor: pointer; padding: 5px; }
+        .hub-link { 
+            text-decoration: none; font-size: 0.7rem; font-weight: 800; color: #999; 
+            background: transparent; border: 1px solid #ddd; padding: 4px 8px; border-radius: 10px; 
+            transition: 0.2s; cursor: pointer;
+        }
+        .hub-link:active { transform: scale(0.95); background: var(--accent); color: var(--main); }
+
+        .textarea-wrapper { position: relative; height: 160px; width: 100%; margin-bottom: 10px; }
+
+        textarea { 
+            width: 100%; height: 100%; padding: 15px; border: 2px solid var(--accent); border-radius: var(--radius); 
+            box-sizing: border-box; font-size: 16px; outline: none; transition: 0.2s; 
+            font-weight: 500; background: var(--input-bg);
+            line-height: 1.5; resize: none;
+            -webkit-appearance: none; -webkit-text-fill-color: #333; opacity: 1 !important;
+            user-select: auto !important; -webkit-user-select: auto !important; 
+        }
+        textarea:focus { border-color: var(--main); background: #fff; }
+
+        .btn-clear-wrapper { position: absolute; right: 10px; bottom: 10px; display: none; }
+        .btn-clear-wrapper.show { display: block; }
+        .btn-clear {
+            width: 28px; height: 28px; background: rgba(0,0,0,0.1); color: #666; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .btn-clear:active { background: #e63946; color: #fff; transform: scale(0.9); }
 
         #result-display {
-            height: 60px;
+            height: 80px; margin: 10px 0;
             display: flex; align-items: center; justify-content: center;
-            background-color: var(--accent); border-radius: var(--radius);
-            font-size: 1.4rem; font-weight: 800; text-align: center;
+            background-color: var(--input-bg); border: 2px dashed var(--accent); border-radius: var(--radius);
+            font-size: 1.4rem; font-weight: 800; text-align: center; color: var(--main);
+            transition: 0.2s;
         }
+        #result-display.deciding { border-style: solid; border-color: var(--main); background: #fff; }
 
-        .decide-btn {
-            width: 100%; background-color: #111; color: #fff;
-            border: none; border-radius: var(--radius);
-            padding: 18px; font-size: 1.2rem; font-weight: 800; cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
+        .decide-btn { 
+            width: 100%; padding: 20px; background-color: var(--main); color: #fff; 
+            border: none; border-radius: var(--radius); font-size: 1.2rem; font-weight: 800; 
+            cursor: pointer; transition: 0.2s; -webkit-appearance: none; margin-bottom: 20px;
         }
-        .decide-btn:active { opacity: 0.8; }
+        .decide-btn:active { transform: scale(0.97); opacity: 0.8; }
 
-        .support-section { margin-top: 15px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .kofi-btn { background-color: #111; color: #fff; text-decoration: none; padding: 12px 25px; border-radius: var(--radius); font-weight: bold; font-size: 0.9rem; }
-        .home-btn { background-color: #eee; color: #666; border: none; padding: 10px 20px; border-radius: var(--radius); font-size: 0.85rem; font-weight: bold; cursor: pointer; }
+        footer { padding: 15px 0 25px; text-align: center; border-top: 1px solid #f5f5f5; font-size: 11px; color: #666; font-weight: 600; }
+        .footer-btns { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        
+        .outline-btn { 
+            background: #fff; color: var(--main); border: 2px solid var(--main); 
+            padding: 12px; border-radius: var(--radius); text-decoration: none; 
+            font-weight: 800; font-size: 13px; display: flex; align-items: center; 
+            justify-content: center; cursor: pointer; transition: 0.2s;
+        }
+        .outline-btn:active { background: var(--accent); transform: scale(0.97); }
 
-        footer { width: 100%; padding: 20px 0; text-align: center; font-size: 0.7rem; color: #bbb; line-height: 1.4; }
+        .footer-info { line-height: 1.6; }
+        .footer-info a { color: inherit; text-decoration: underline; display: inline-block; padding: 4px; }
 
-        /* Install Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
-        .modal-content { background: #fff; padding: 25px; border-radius: var(--radius); width: 85%; max-width: 320px; text-align: center; position: relative; }
-        .modal-close { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; color: #ccc; cursor: pointer; }
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: #fff; width: 85%; max-width: 340px; padding: 30px; border-radius: var(--radius); position: relative; text-align: left; }
+        .close-x { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #888; cursor: pointer; }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
 <div class="container">
-    <h1>My Menu Roulette</h1>
-    <p class="description">1 line = 1 menu. Auto-saved.</p>
-    
-    <textarea id="menu-list" placeholder="Enter menus here..."></textarea>
-    <div class="clear-row"><button class="clear-btn" onclick="clearList()">[ CLEAR ALL ]</button></div>
-    
-    <div id="result-display">Ready?</div>
-    <button class="decide-btn" onclick="decideMenu()">DECIDE</button>
-
-    <div class="support-section">
-        <a href="https://ko-fi.com/afrorakda" target="_blank" class="kofi-btn">☕ Support me on Ko-fi</a>
-        <button class="home-btn" onclick="showModal()">Add to Home Screen</button>
+    <div class="main-unit">
+        <header>
+            <div class="title-group">
+                <h1>Menu Roulette</h1>
+                <p class="subtitle">1 line = 1 menu. Auto-saved.</p>
+            </div>
+            <a href="https://afrorakda.github.io/" class="hub-link">🏠 Hub</a>
+        </header>
+        
+        <div class="textarea-wrapper">
+            <textarea id="menu-list" placeholder="Enter menus here..."></textarea>
+            <div id="clearWrapper" class="btn-clear-wrapper">
+                <div class="btn-clear" onclick="clearList()">×</div>
+            </div>
+        </div>
+        
+        <div id="result-display">Ready?</div>
+        <button class="decide-btn" id="decideBtn" onclick="decideMenu()">DECIDE</button>
     </div>
+
+    <footer id="dynamic-footer">
+        <div class="footer-btns">
+            <a href="https://ko-fi.com/afrorakda" target="_blank" class="outline-btn" id="kofi-link">☕️buy me a coffee</a>
+            <button class="outline-btn" onclick="showModal()" id="install-text">Add to Home Screen</button>
+        </div>
+        <div class="footer-info">
+            No login / No tracking / No ads / Browser only<br>
+            <a href="https://afrorakda.com/privacy/" id="privacy-link">Privacy Policy</a><br>
+            <span id="copyright">My Menu Roulette © 2026</span>
+        </div>
+    </footer>
 </div>
 
-<footer>
-    No login / No tracking / No ads / Browser only<br>
-    Privacy Policy / afrorakda © 2026
-</footer>
-
-<div id="installModal" class="modal" onclick="closeModal()">
+<div id="modal" onclick="hideModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <span class="modal-close" onclick="closeModal()">&times;</span>
-        <h3 style="margin-top:0;">📱 Install</h3>
-        <p style="font-size: 0.85rem; color: #666;">Add to your home screen.</p>
-        <div style="background:#fafafa; padding:15px; border-radius:15px; text-align:left; font-size:0.85rem;">
-            <p>🍏 <b>iPhone (Safari):</b><br>Tap <b>Share</b>, then <b>Add to Home Screen</b>.</p>
-            <p style="margin-bottom:0;">🤖 <b>Android (Chrome):</b><br>Tap <b>Menu (⋮)</b>, then <b>Add to home screen</b>.</p>
-        </div>
+        <span class="close-x" onclick="hideModal()">×</span>
+        <h3 id="modal-title" style="margin-top:0;">Install App</h3>
+        <p id="modal-msg" style="font-size:14px; font-weight:600;">Add to your home screen.</p>
+        <p id="modal-ios" style="font-size:13px; color:#666;">iOS: Tap Share then 'Add to Home Screen'.</p>
+        <p id="modal-android" style="font-size:13px; color:#666;">Android: Tap Menu then 'Add to Home screen'.</p>
     </div>
 </div>
 
 <script>
     const menuInput = document.getElementById('menu-list');
     const resultDisplay = document.getElementById('result-display');
+    const clearWrapper = document.getElementById('clearWrapper');
 
     window.onload = () => {
         const saved = localStorage.getItem('fc_roulette_list');
-        if (saved) menuInput.value = saved;
+        if (saved) {
+            menuInput.value = saved;
+            toggleClearBtn(saved);
+        }
     };
 
     menuInput.addEventListener('input', () => {
-        localStorage.setItem('fc_roulette_list', menuInput.value);
+        const val = menuInput.value;
+        localStorage.setItem('fc_roulette_list', val);
+        toggleClearBtn(val);
     });
+
+    function toggleClearBtn(val) {
+        if (val.length > 0) clearWrapper.classList.add('show');
+        else clearWrapper.classList.remove('show');
+    }
 
     function clearList() {
         if(confirm("Clear all menus?")) {
             menuInput.value = "";
             localStorage.setItem('fc_roulette_list', "");
-            resultDisplay.innerText = "Cleared";
+            toggleClearBtn("");
+            resultDisplay.innerText = "Ready?";
+            menuInput.focus();
         }
     }
 
@@ -134,19 +197,41 @@
             resultDisplay.innerText = "Enter list!";
             return;
         }
+
+        resultDisplay.classList.add('deciding');
         let count = 0;
         const interval = setInterval(() => {
             resultDisplay.innerText = lines[Math.floor(Math.random() * lines.length)];
             count++;
-            if (count > 10) {
+            if (count > 12) {
                 clearInterval(interval);
-                resultDisplay.innerText = "✨ " + lines[Math.floor(Math.random() * lines.length)] + " ✨";
+                resultDisplay.classList.remove('deciding');
+                const final = lines[Math.floor(Math.random() * lines.length)];
+                resultDisplay.innerText = "✨ " + final + " ✨";
             }
-        }, 60);
+        }, 70);
     }
 
-    function showModal() { document.getElementById('installModal').style.display = 'flex'; }
-    function closeModal() { document.getElementById('installModal').style.display = 'none'; }
+    function showModal() { document.getElementById('modal').style.display = 'flex'; }
+    function hideModal() { document.getElementById('modal').style.display = 'none'; }
+
+    async function loadFooter() {
+        try {
+            const response = await fetch('footer.json');
+            if (!response.ok) return;
+            const data = await response.json();
+            if(data.kofi) { document.getElementById('kofi-link').href = data.kofi.url; document.getElementById('kofi-link').textContent = data.kofi.text; }
+            if(data.install) {
+                document.getElementById('install-text').textContent = data.install.text;
+                document.getElementById('modal-title').textContent = data.install.title;
+                document.getElementById('modal-msg').textContent = data.install.msg;
+                document.getElementById('modal-ios').textContent = data.install.ios;
+                document.getElementById('modal-android').textContent = data.install.android;
+            }
+            if(data.privacy) document.getElementById('privacy-link').href = data.privacy.url;
+        } catch (e) { console.error("Footer update skipped."); }
+    }
+    window.addEventListener('DOMContentLoaded', loadFooter);
 </script>
 
 </body>
