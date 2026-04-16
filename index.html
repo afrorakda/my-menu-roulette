@@ -11,7 +11,7 @@
     <link rel="apple-touch-icon" href="image_14.png">
 
     <style>
-        :root { --main: #333; --bg: #fff; --accent: #eee; --input-bg: #fafafa; --radius: 15px; --placeholder: #bbb; }
+        :root { --main: #333; --bg: #fff; --accent: #eee; --input-bg: #fafafa; --radius: 15px; }
         
         * { 
             -webkit-touch-callout: none !important; 
@@ -62,14 +62,13 @@
             box-sizing: border-box; font-size: 16px; outline: none; transition: 0.2s; 
             font-weight: 500; background: var(--input-bg);
             line-height: 1.5; resize: none;
-            -webkit-appearance: none; -webkit-text-fill-color: var(--main); opacity: 1 !important;
+            -webkit-appearance: none; -webkit-text-fill-color: #333; opacity: 1 !important;
             user-select: auto !important; -webkit-user-select: auto !important; 
         }
-        textarea::placeholder { color: var(--placeholder); -webkit-text-fill-color: var(--placeholder); }
         textarea:focus { border-color: var(--main); background: #fff; }
-        textarea:read-only { background: var(--accent); opacity: 0.6 !important; }
+        textarea::placeholder { color: #bbb; -webkit-text-fill-color: #bbb; } /* 透かしの色を調整 */
 
-        .btn-clear-wrapper { position: absolute; right: 10px; bottom: 10px; display: none; }
+        .btn-clear-wrapper { position: absolute; right: 12px; bottom: 12px; display: none; }
         .btn-clear-wrapper.show { display: block; }
         .btn-clear {
             width: 32px; height: 32px; background: rgba(0,0,0,0.05); color: #888; 
@@ -108,7 +107,7 @@
             cursor: pointer; transition: 0.1s; -webkit-appearance: none; margin-bottom: 20px;
         }
         .decide-btn:active { transform: scale(0.97) translateY(2px); opacity: 0.9; }
-        .decide-btn:disabled { background-color: #ccc; cursor: not-allowed; opacity: 0.6; }
+        .decide-btn:disabled { background-color: #ccc; cursor: not-allowed; }
 
         footer { padding: 15px 0 25px; text-align: center; border-top: 1px solid #f5f5f5; font-size: 11px; color: #666; font-weight: 600; }
         .footer-btns { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
@@ -149,4 +148,123 @@
         </div>
         
         <div id="result-display"><span>Ready?</span></div>
-        <button class="decide-btn" id
+        <button class="decide-btn" id="decideBtn" onclick="startRoulette()">DECIDE</button>
+    </div>
+
+    <footer>
+        <div class="footer-btns">
+            <a href="https://ko-fi.com/afrorakda" target="_blank" class="outline-btn" id="kofi-link">☕️buy me a coffee</a>
+            <button class="outline-btn" onclick="showModal()" id="install-text">Add to Home Screen</button>
+        </div>
+        <div class="footer-info">
+            No login / No tracking / No ads / Browser only<br>
+            <a href="https://afrorakda.com/privacy/" id="privacy-link">Privacy Policy</a><br>
+            <span id="copyright">My Menu Roulette © 2026</span>
+        </div>
+    </footer>
+</div>
+
+<div id="modal" onclick="hideModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <span class="close-x" onclick="hideModal()">×</span>
+        <h3 id="modal-title" style="margin-top:0;">Install App</h3>
+        <p id="modal-msg" style="font-size:14px; font-weight:600;">Add to home screen for easy access.</p>
+        <p id="modal-ios" style="font-size:13px; color:#666;">iOS: Tap Share then 'Add to Home Screen'.</p>
+        <p id="modal-android" style="font-size:13px; color:#666;">Android: Tap Menu then 'Add to home screen'.</p>
+    </div>
+</div>
+
+<script>
+    const menuInput = document.getElementById('menu-list');
+    const resultDisplay = document.getElementById('result-display');
+    const clearWrapper = document.getElementById('clearWrapper');
+    const decideBtn = document.getElementById('decideBtn');
+
+    window.onload = () => {
+        const saved = localStorage.getItem('fc_roulette_list');
+        if (saved) {
+            menuInput.value = saved;
+            toggleClearBtn(saved);
+        }
+    };
+
+    menuInput.addEventListener('input', () => {
+        const val = menuInput.value;
+        localStorage.setItem('fc_roulette_list', val);
+        toggleClearBtn(val);
+    });
+
+    function toggleClearBtn(val) {
+        if (val.length > 0) clearWrapper.classList.add('show');
+        else clearWrapper.classList.remove('show');
+    }
+
+    function resetAll() {
+        // 即座にクリア（ポップアップなし）
+        menuInput.value = "";
+        localStorage.setItem('fc_roulette_list', "");
+        clearWrapper.classList.remove('show');
+        resultDisplay.innerHTML = "<span>Ready?</span>";
+        resultDisplay.classList.remove('win');
+        menuInput.focus();
+    }
+
+    function startRoulette() {
+        const lines = menuInput.value.split('\n').filter(line => line.trim() !== "");
+        if (lines.length === 0) {
+            resultDisplay.innerHTML = "<span>Enter list!</span>";
+            return;
+        }
+
+        decideBtn.disabled = true;
+        menuInput.readOnly = true; // 回転中は入力をロック
+        resultDisplay.classList.remove('win');
+        
+        let duration = 50; 
+        let iterations = 0;
+        const maxIterations = 25; 
+
+        function step() {
+            resultDisplay.innerHTML = "<span>" + lines[Math.floor(Math.random() * lines.length)] + "</span>";
+            iterations++;
+
+            if (iterations < maxIterations) {
+                if (iterations > 15) duration += 40;
+                else if (iterations > 10) duration += 20;
+                
+                setTimeout(step, duration);
+            } else {
+                const final = lines[Math.floor(Math.random() * lines.length)];
+                resultDisplay.innerHTML = "<span>✨ " + final + " ✨</span>";
+                resultDisplay.classList.add('win');
+                decideBtn.disabled = false;
+                menuInput.readOnly = false; // ロック解除
+            }
+        }
+        step();
+    }
+
+    function showModal() { document.getElementById('modal').style.display = 'flex'; }
+    function hideModal() { document.getElementById('modal').style.display = 'none'; }
+
+    async function loadFooter() {
+        try {
+            const response = await fetch('footer.json');
+            if (!response.ok) return;
+            const data = await response.json();
+            if(data.kofi) { document.getElementById('kofi-link').href = data.kofi.url; document.getElementById('kofi-link').textContent = data.kofi.text; }
+            if(data.install) {
+                document.getElementById('install-text').textContent = data.install.text;
+                document.getElementById('modal-title').textContent = data.install.title;
+                document.getElementById('modal-msg').textContent = data.install.msg;
+                document.getElementById('modal-ios').textContent = data.install.ios;
+                document.getElementById('modal-android').textContent = data.install.android;
+            }
+            if(data.privacy) document.getElementById('privacy-link').href = data.privacy.url;
+        } catch (e) { console.error("Footer update skipped."); }
+    }
+    window.addEventListener('DOMContentLoaded', loadFooter);
+</script>
+
+</body>
+</html>
